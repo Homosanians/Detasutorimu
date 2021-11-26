@@ -10,6 +10,7 @@ namespace Detasutorimu.Example
             Handler hld = new Handler();
 
             new ArgumentParser()
+                //.WithSettings(new ArgumentParserSettings())
                 .Register<Handler>(hld)
                 .Parse(args);
 
@@ -20,13 +21,13 @@ namespace Detasutorimu.Example
     public class Handler
     {
         [Argument("a", "aaaa")]
-        public void Bum()
+        public void Aaaaa()
         {
             Console.WriteLine("aaaaaaa");
         }
 
         [Argument("b", "bbbbbbbbb")]
-        public void Shit()
+        public void Bbbb()
         {
             Console.WriteLine("bbbbbb");
         }

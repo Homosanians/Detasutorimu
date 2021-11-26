@@ -131,38 +131,6 @@ namespace Detasutorimu
             return null;
         }
 
-        // отдеьно и расширяемо туду
-        private ArgumentModel UpdateContent(ArgumentModel model, string rawContent)
-        {
-            switch (model.Argument.ExpectedType)
-            {
-                case Enums.ExpectedTypes.None:
-                    break;
-                case Enums.ExpectedTypes.String:
-                    model.Content = rawContent;
-                    break;
-                case Enums.ExpectedTypes.Bool:
-                    model.Content = Convert.ToBoolean(rawContent);
-                    break;
-                case Enums.ExpectedTypes.Int:
-                    model.Content = Convert.ToInt32(rawContent);
-                    break;
-                case Enums.ExpectedTypes.Float:
-                    model.Content = (float)Convert.ToDouble(rawContent);
-                    break;
-                case Enums.ExpectedTypes.Double:
-                    model.Content = Convert.ToDouble(rawContent);
-                    break;
-                case Enums.ExpectedTypes.Path:
-                    model.Content = new FileInfo(rawContent);
-                    break;
-                default:
-                    throw new Exception("Impossible");
-            }
-
-            return model;
-        }
-
         public ArgumentParser Parse(string[] args)
         {
             if (args.Length > 0)
@@ -177,7 +145,8 @@ namespace Detasutorimu
                     {
                         if (GetTypeOfArg(args[i + 1]) == ArgumentTypes.Content)
                         {
-                            parsedAttributes.Add(UpdateContent(model, args[i + 1]));
+                            model.Content = args[i + 1];
+                            parsedAttributes.Add(model);
                         }
                     }
                 }
