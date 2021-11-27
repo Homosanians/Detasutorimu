@@ -21,13 +21,13 @@ namespace Detasutorimu.Example
 
     public class Handler
     {
-        [Argument("a", "aaaa")]
+        [Argument("a", "Aaaaa", new string[] { "aaaa" })]
         public void Aaaaa(ArgumentContext ctx)
         {
             Console.WriteLine($"aaaaaaa {ctx.ToString()}");
         }
 
-        [Argument("b", "bbbbbbbbb")]
+        [Argument("b", "Bebra", new string[] { "bbbbbbbbb" })]
         public void Bbbb()
         {
             Console.WriteLine("bbbbbb");

@@ -22,7 +22,7 @@ namespace Detasutorimu
             {
                 foreach (var attr in argumentOfMethodsToBeInvoked.Where(x => x.Member.MemberType == MemberTypes.Method))
                 {
-                    if (attr.Argument.Name == method.Name)
+                    if (attr.Argument.Name == method.GetCustomAttribute<ArgumentAttribute>().Name)
                     {
                         var obj = Activator.CreateInstance(method.DeclaringType);
                         method.Invoke(obj, null);
