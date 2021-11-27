@@ -8,11 +8,13 @@ using System.Reflection;
 
 namespace Detasutorimu
 {
-    // todo: check for name or aliases duplicates and forbid them
+    // todo: check for name or aliases duplicates. warn about it and use latest or valid
     public class ArgumentParser
     {
+        private ArgumentParserSettings argumentParserSettings = new ArgumentParserSettings();
+
         //private List<Type> handlers = new List<Type>();
-        private Dictionary<Type, object> handlers = new Dictionary<Type, object>(); // type, instance
+        private Dictionary<Type, object> container = new Dictionary<Type, object>(); // Type, Instance
         private List<ArgumentModel> allAttributes;
         private List<ArgumentModel> parsedAttributes;
 
@@ -20,14 +22,14 @@ namespace Detasutorimu
 
         public ArgumentParser Register<T>(object obj)
         {
-            handlers.Add(typeof(T), obj);
+            container.Add(typeof(T), obj);
 
             return this;
         }
 
         public ArgumentParser Register<T>()
         {
-            handlers.Add(typeof(T), null);
+            container.Add(typeof(T), null);
 
             return this;
         }
@@ -37,138 +39,24 @@ namespace Detasutorimu
             return allAttributes;
         }
 
-        private void RefreshAttributesAndUpdateFieldAndProperties()
-        {
-            allAttributes = new List<ArgumentModel>();
-
-            if (handlers.Count == 0)
-            {
-                throw new Exception("No handlers registered");
-            }
-
-            foreach (var item in handlers)
-            {
-                MemberInfo[] members = item.Key.GetMembers();
-                foreach (var member in members)
-                {
-                    ArgumentAttribute attr = (ArgumentAttribute)Attribute.GetCustomAttribute(member, typeof(ArgumentAttribute));
-                    allAttributes.Add(new ArgumentModel()
-                    {
-                        Argument = attr,
-                        MemberType = member.MemberType
-                    });
-
-                    switch (member.MemberType)
-                    {
-                        case MemberTypes.Field:
-                            FieldInfo fieldInfo = item.Key.GetField(member.Name, BindingFlags.NonPublic | BindingFlags.Instance);
-                            fieldInfo?.SetValue(item.Value, false);
-                            break;
-                        case MemberTypes.Property:
-                            PropertyInfo propertyInfo = item.Key.GetProperty(member.Name, BindingFlags.NonPublic | BindingFlags.Instance);
-                            propertyInfo.SetValue(item.Value, false);
-                            break;
-                    }
-                }
-            }
-
-            if (allAttributes.Count == 0)
-            {
-                throw new Exception("No argument attributes were found.");
-            }
-        }
-
-        private void InvokeAllMethodsOfAttribute(Type attribute)
-        {
-            var methods = AppDomain.CurrentDomain.GetAssemblies() // Returns all currenlty loaded assemblies
-                .SelectMany(x => x.GetTypes()) // returns all types defined in this assemblies
-                .Where(x => x.IsClass) // only yields classes
-                .SelectMany(x => x.GetMethods()) // returns all methods defined in those classes
-                .Where(x => x.GetCustomAttributes(attribute, false).FirstOrDefault() != null); // returns only methods that have the InvokeAttribute
-
-            foreach (var method in methods) // iterate through all found methods
-            {
-                foreach (var attr in parsedAttributes.Where(x => x.MemberType == MemberTypes.Method))
-                {
-                    if (attr.Argument.Name == method.Name)
-                    {
-                        var obj = Activator.CreateInstance(method.DeclaringType); // Instantiate the class
-                        method.Invoke(obj, null); // invoke the method
-                    }
-                }
-            }
-        }
-
-        private ArgumentTypes GetTypeOfArg(string arg)
-        {
-            if (allAttributes.Count != 0) { throw new Exception("no atributes");  }
-
-            foreach(var attr in allAttributes)
-            {
-                if (arg == attr.Argument.Name) { return ArgumentTypes.Name; }
-                foreach (var alias in attr.Argument.Aliases)
-                {
-                    if (arg == alias) { return ArgumentTypes.Alias; }
-                }
-            }
-
-            return ArgumentTypes.Content;
-        }
-
-        private ArgumentModel GetArgumentModelByRawValue(string arg)
-        {
-            if (allAttributes.Count != 0) { throw new Exception("no atributes"); }
-
-            foreach (var attr in allAttributes)
-            {
-                if (arg == attr.Argument.Name) { return attr; }
-                foreach (var alias in attr.Argument.Aliases)
-                {
-                    if (arg == alias) { return attr; }
-                }
-            }
-
-            return null;
-        }
-
         public ArgumentParser Parse(string[] args)
         {
             if (args.Length > 0)
             {
+                allAttributes = ArgumentReflectionUtils.GetAllAttributes(container);
+                parsedAttributes = ArgumentReflectionUtils.GetParsedAttributes(container, allAttributes, args, argumentParserSettings);
+                ArgumentReflectionUtils.InvokeAllMethodsOfAttribute(typeof(ArgumentAttribute), parsedAttributes);
 
-                for (int i = 0; i < args.Length; i++)
-                {
-                    var item = args[i];
-
-                    var model = GetArgumentModelByRawValue(item);
-                    if (model != null && i + 1 <= args.Length)
-                    {
-                        if (GetTypeOfArg(args[i + 1]) == ArgumentTypes.Content)
-                        {
-                            model.Content = args[i + 1];
-                            parsedAttributes.Add(model);
-                        }
-                    }
-                }
-
-                RefreshAttributesAndUpdateFieldAndProperties();
-
-                InvokeAllMethodsOfAttribute(typeof(ArgumentAttribute));
-
-                foreach (var attr in allAttributes)
-                {
-
-                }
             }
 
             return this;
         }
-    }
 
-    enum ArgumentTypes
-    {
-        Name,
-        Alias,
-        Content
+        public ArgumentParser WithSettings(ArgumentParserSettings argumentParserSettings)
+        {
+            this.argumentParserSettings = argumentParserSettings;
+
+            return this;
+        }
     }
 }

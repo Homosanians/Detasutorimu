@@ -1,4 +1,5 @@
 ﻿using Detasutorimu.Attributes;
+using Detasutorimu.Entities;
 using System;
 
 namespace Detasutorimu.Example
@@ -8,11 +9,11 @@ namespace Detasutorimu.Example
         static void Main(string[] args)
         {
             Handler hld = new Handler();
-
+            var argruments = new string[] { "-g", "--bbbbbbbbb" };
             new ArgumentParser()
-                //.WithSettings(new ArgumentParserSettings())
+                .WithSettings(new ArgumentParserSettings())
                 .Register<Handler>(hld)
-                .Parse(args);
+                .Parse(argruments);
 
             Console.WriteLine(hld.good);
         }
@@ -21,9 +22,9 @@ namespace Detasutorimu.Example
     public class Handler
     {
         [Argument("a", "aaaa")]
-        public void Aaaaa()
+        public void Aaaaa(ArgumentContext ctx)
         {
-            Console.WriteLine("aaaaaaa");
+            Console.WriteLine($"aaaaaaa {ctx.ToString()}");
         }
 
         [Argument("b", "bbbbbbbbb")]

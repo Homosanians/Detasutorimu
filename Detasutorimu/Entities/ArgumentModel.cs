@@ -8,8 +8,8 @@ namespace Detasutorimu.Entities
 {
     public class ArgumentModel
     {
-        public MemberTypes MemberType { get; set; }
+        public MemberInfo Member { get; set; }
         public ArgumentAttribute Argument { get; set; }
-        public object Content { get; set; }
+        public string Content { get; set; }
     }
 }
