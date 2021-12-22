@@ -9,31 +9,33 @@ namespace Detasutorimu.Example
         static void Main(string[] args)
         {
             Handler hld = new Handler();
-            var argruments = new string[] { "-g", "--bbbbbbbbb" };
+            var argruments = new string[] { "-g", "--pingpong", "hello world!", "-w" };
+            // register assembly(ies)
+            // context in args
             new ArgumentParser()
                 .WithSettings(new ArgumentParserSettings())
                 .Register<Handler>(hld)
-                .Parse(argruments);
+                .ParseAndExecute(argruments);
 
-            Console.WriteLine(hld.good);
+            Console.WriteLine(hld.gBool); // register<>(inst) should handle isntanec and it values i nit | подумай об испольщзовапнии ключ слова REF
         }
     }
 
     public class Handler
     {
-        [Argument("a", "Aaaaa", new string[] { "aaaa" })]
-        public void Aaaaa(ArgumentContext ctx)
+        [Argument("p", "Replies with the context", new string[] { "pingpong" })]
+        public void Method1(ArgumentContext ctx)
         {
-            Console.WriteLine($"aaaaaaa {ctx.ToString()}");
+            Console.WriteLine($"Pong! {ctx.Content}");
         }
 
-        [Argument("b", "Bebra", new string[] { "bbbbbbbbb" })]
-        public void Bbbb()
+        [Argument("w", "Writes something", new string[] { "write" })]
+        public void Method2()
         {
-            Console.WriteLine("bbbbbb");
+            Console.WriteLine("Priveeeet");
         }
 
-        [Argument("g", "good")]
-        public bool good;
+        [Argument("g", "A variable")]
+        public bool gBool;
     }
 }

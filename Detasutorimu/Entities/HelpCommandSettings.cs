@@ -4,7 +4,16 @@ using System.Text;
 
 namespace Detasutorimu
 {
-    class HelpCommandSettings
+    public class HelpCommandSettings
     {
+        public string GetHelp()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PrintHelp()
+        {
+            Console.WriteLine(GetHelp());
+        }
     }
 }

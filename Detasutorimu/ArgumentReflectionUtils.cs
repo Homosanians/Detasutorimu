@@ -25,7 +25,28 @@ namespace Detasutorimu
                     if (attr.Argument.Name == method.GetCustomAttribute<ArgumentAttribute>().Name)
                     {
                         var obj = Activator.CreateInstance(method.DeclaringType);
-                        method.Invoke(obj, null);
+                        try
+                        {
+                            if (method.GetParameters().Length == 0)
+                            {
+                                method.Invoke(obj, null);
+                            }
+                            else if (method.GetParameters().Length == 1)
+                            {
+                                ArgumentContext ctx = new ArgumentContext();
+                                if (!string.IsNullOrEmpty(attr.Content))
+                                {
+                                    ctx.ContextPresent = true;
+                                    ctx.Content = attr.Content;
+                                }
+                                method.Invoke(obj, new object[] { ctx });
+                            }
+                        }
+                        catch (TargetParameterCountException)
+                        {
+                            // Количество аргументов не совпадает с переданным или задан необрабатываемый аргумент.
+                            throw new Exception("Method parameters are not expected. It can only be ArgumentContext or nothing.");
+                        }
                     }
                 }
             }
@@ -76,7 +97,8 @@ namespace Detasutorimu
 
                 string nextItem = null;
                 ArgumentTypes nextType = ArgumentTypes.None;
-                if (i + 1 < args.Length) {
+                if (i + 1 < args.Length)
+                {
                     nextItem = RemovePrefixes(args[i + 1], new string[] { settings.NamePrefix, settings.AliasPrefix });
                     nextType = GetTypeOfArg(allAttributes, args[i + 1], settings);
                 }
@@ -89,23 +111,32 @@ namespace Detasutorimu
                     prevType = GetTypeOfArg(allAttributes, args[i - 1], settings);
                 }
 
-                Console.WriteLine($"UTILS:92 >> PREV {prevItem} | CURR {item} | NEXT {nextItem}");
+                //Console.WriteLine($"UTILS:GetParsedAttributes >> PREV {prevItem} {prevType} | CURR {item} {currentType} | NEXT {nextItem} {nextType}");
 
                 if (currentType == ArgumentTypes.Name || currentType == ArgumentTypes.Alias)
                 {
                     foreach (var attr in allAttributes)
                     {
-                        if (nextType == ArgumentTypes.Content)
+                        if (item == attr.Argument.Name)
                         {
-                            attr.Content = nextItem;
+                            if (nextType == ArgumentTypes.Content)
+                            {
+                                attr.Content = nextItem;
+                            }
+                            parsedAttributes.Add(attr);
                         }
-
-                        if (item == attr.Argument.Name) { parsedAttributes.Add(attr); }
                         if (attr.Argument.Aliases != null)
                         {
                             foreach (var alias in attr.Argument.Aliases)
                             {
-                                if (item == alias) { parsedAttributes.Add(attr); }
+                                if (item == alias)
+                                {
+                                    if (nextType == ArgumentTypes.Content)
+                                    {
+                                        attr.Content = nextItem;
+                                    }
+                                    parsedAttributes.Add(attr);
+                                }
                             }
                         }
                     }
@@ -115,9 +146,9 @@ namespace Detasutorimu
             return parsedAttributes;
         }
 
-        internal static void SetValuesForAttributes(Dictionary<Type, object> container, List<ArgumentModel> arguments)
+        internal static void SetValuesForAttributes(Dictionary<Type, object> container, List<ArgumentModel> argumentOfVariablesToBeSet)
         {
-            //not sure it works
+            //throw new NotImplementedException();
             foreach (var item in container)
             {
                 MemberInfo[] members = item.Key.GetMembers();
@@ -126,18 +157,16 @@ namespace Detasutorimu
                     ArgumentAttribute attr = (ArgumentAttribute)Attribute.GetCustomAttribute(member, typeof(ArgumentAttribute));
                     if (attr != null)
                     {
-                        switch (item.Key.MemberType)
+                        switch (member.MemberType)
                         {
                             case MemberTypes.Field:
                                 FieldInfo fieldInfo = item.Key.GetField(member.Name, BindingFlags.NonPublic | BindingFlags.Instance);
-                                fieldInfo?.SetValue(item.Value, false);
+                                fieldInfo.SetValue(item.Value, true);
                                 break;
                             case MemberTypes.Property:
                                 PropertyInfo propertyInfo = item.Key.GetProperty(member.Name, BindingFlags.NonPublic | BindingFlags.Instance);
-                                propertyInfo?.SetValue(item.Value, false);
+                                propertyInfo.SetValue(item.Value, true);
                                 break;
-                            default:
-                                throw new Exception("Not possible");
                         }
                     }
                 }

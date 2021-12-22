@@ -13,8 +13,7 @@ namespace Detasutorimu
     {
         private ArgumentParserSettings argumentParserSettings = new ArgumentParserSettings();
 
-        //private List<Type> handlers = new List<Type>();
-        private Dictionary<Type, object> container = new Dictionary<Type, object>(); // Type, Instance
+        private Dictionary<Type, object> container = new Dictionary<Type, object>(); // (Type, Instance) of handlers
         private List<ArgumentModel> allAttributes;
         private List<ArgumentModel> parsedAttributes;
 
@@ -39,14 +38,18 @@ namespace Detasutorimu
             return allAttributes;
         }
 
-        public ArgumentParser Parse(string[] args)
+        public ArgumentParser ParseAndExecute(string[] args)
         {
             if (args.Length > 0)
             {
                 allAttributes = ArgumentReflectionUtils.GetAllAttributes(container);
                 parsedAttributes = ArgumentReflectionUtils.GetParsedAttributes(container, allAttributes, args, argumentParserSettings);
+                foreach (var item in parsedAttributes)
+                {
+                    Console.WriteLine($"<parsed attributes> {item.Argument.Name} {item.Content} {item.Member.Name}");
+                }
                 ArgumentReflectionUtils.InvokeAllMethodsOfAttribute(typeof(ArgumentAttribute), parsedAttributes);
-
+                ArgumentReflectionUtils.SetValuesForAttributes(container, parsedAttributes);
             }
 
             return this;
