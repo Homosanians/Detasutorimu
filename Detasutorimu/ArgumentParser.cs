@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Detasutorimu
 {
-    // todo: check for name or aliases duplicates. warn about it and use latest or valid
+    // TODO check for name or aliases duplicates. warn about it and use latest or valid
     public class ArgumentParser
     {
         private ArgumentParserSettings argumentParserSettings = new ArgumentParserSettings();
@@ -19,6 +19,8 @@ namespace Detasutorimu
 
         public string HelpText { get; private set; } //
 
+        // TODO register assembly(ies)
+        // register<>(inst) should handle isntanec and it values i nit
         public ArgumentParser Register<T>(object obj)
         {
             container.Add(typeof(T), obj);
@@ -44,10 +46,6 @@ namespace Detasutorimu
             {
                 allAttributes = ArgumentReflectionUtils.GetAllAttributes(container);
                 parsedAttributes = ArgumentReflectionUtils.GetParsedAttributes(container, allAttributes, args, argumentParserSettings);
-                foreach (var item in parsedAttributes)
-                {
-                    Console.WriteLine($"<parsed attributes> {item.Argument.Name} {item.Content} {item.Member.Name}");
-                }
                 ArgumentReflectionUtils.InvokeAllMethodsOfAttribute(typeof(ArgumentAttribute), parsedAttributes);
                 ArgumentReflectionUtils.SetValuesForAttributes(container, parsedAttributes);
             }

@@ -10,14 +10,13 @@ namespace Detasutorimu.Example
         {
             Handler hld = new Handler();
             var argruments = new string[] { "-g", "--pingpong", "hello world!", "-w" };
-            // register assembly(ies)
-            // context in args
+            
             new ArgumentParser()
                 .WithSettings(new ArgumentParserSettings())
                 .Register<Handler>(hld)
                 .ParseAndExecute(argruments);
-
-            Console.WriteLine(hld.gBool); // register<>(inst) should handle isntanec and it values i nit | подумай об испольщзовапнии ключ слова REF
+            
+            Console.WriteLine(hld.gBool); 
         }
     }
 
