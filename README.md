@@ -49,7 +49,7 @@ Usage of non-existent parameters will bring up the help menu.
 Detasutorimu options parser
 
 Name   Aliases      Desciption
-p      (pingpong)   - Replies with the context
+p      (ping)       - Replies with the context
 w      (write)      - Writes something
 g                   - A boolean variable
 s                   - A string variable
