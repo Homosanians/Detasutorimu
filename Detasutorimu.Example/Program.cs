@@ -9,8 +9,8 @@ namespace Detasutorimu.Example
         static void Main(string[] args)
         {
             Handler hld = new Handler();
-            //var argruments = new string[] { "-g", "-s", "Meow", "--pingpong", "hello world!", "-w" };
-            var argruments = new string[] { "-z" };
+            var argruments = new string[] { "-g", "-s", "Meow", "--pingpong", "hello world!", "-w" };
+            //var argruments = new string[] { "-z" };
 
             new ArgumentParser()
                 .WithSettings(new ArgumentParserSettings())

@@ -1,8 +1,6 @@
 ﻿using Detasutorimu.Entities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Detasutorimu
 {
@@ -46,7 +44,7 @@ namespace Detasutorimu
             return x;
         }
 
-        // TODO
+        // TODO. Functionality is partially implemented
         public string Build()
         {
             if (!built)
