@@ -2,13 +2,9 @@
 using Detasutorimu.Entities;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace Detasutorimu
 {
-    // TODO check for name or aliases duplicates. warn about it and use latest or valid
     public class ArgumentParser
     {
         private ArgumentParserSettings argumentParserSettings = new ArgumentParserSettings();
@@ -17,8 +13,6 @@ namespace Detasutorimu
         private List<ArgumentModel> allAttributes;
         private List<ArgumentModel> parsedAttributes;
 
-        // TODO register assembly(ies)
-        // register<>(inst) should handle isntanec and it values i nit
         public ArgumentParser Register<T>(object obj)
         {
             container.Add(typeof(T), obj);
