@@ -9,14 +9,16 @@ namespace Detasutorimu.Example
         static void Main(string[] args)
         {
             Handler hld = new Handler();
-            var argruments = new string[] { "-g", "--pingpong", "hello world!", "-w" };
-            
+            //var argruments = new string[] { "-g", "-s", "Meow", "--pingpong", "hello world!", "-w" };
+            var argruments = new string[] { "-z" };
+
             new ArgumentParser()
                 .WithSettings(new ArgumentParserSettings())
                 .Register<Handler>(hld)
                 .ParseAndExecute(argruments);
             
-            Console.WriteLine(hld.gBool); 
+            Console.WriteLine(hld.gBool);
+            Console.WriteLine(hld.sVar);
         }
     }
 
@@ -34,7 +36,10 @@ namespace Detasutorimu.Example
             Console.WriteLine("Priveeeet");
         }
 
-        [Argument("g", "A variable")]
+        [Argument("g", "A boolean variable")]
         public bool gBool;
+
+        [Argument("s", "A string variable")]
+        public string sVar;
     }
 }

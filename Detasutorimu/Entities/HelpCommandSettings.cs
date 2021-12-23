@@ -6,14 +6,13 @@ namespace Detasutorimu
 {
     public class HelpCommandSettings
     {
-        public string GetHelp()
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// "Detasutorimu options parser\n\n{0}\n" by default. POSIX sensitive.
+        /// </summary>
+        public string HelpMessageFormat = "Detasutorimu options parser\n\n{0}\n";
 
-        public void PrintHelp()
-        {
-            Console.WriteLine(GetHelp());
-        }
+        public bool UseHelp { get; set; } = true;
+
+        public bool PrintToConsoleByDefault { get; set; } = true;
     }
 }

@@ -40,12 +40,29 @@ namespace Detasutorimu
 
         public ArgumentParser ParseAndExecute(string[] args)
         {
+            allAttributes = ArgumentReflectionUtils.GetAllAttributes(container);
+
+            bool userrelatedErrorOccured = false;
+
             if (args.Length > 0)
             {
-                allAttributes = ArgumentReflectionUtils.GetAllAttributes(container);
                 parsedAttributes = ArgumentReflectionUtils.GetParsedAttributes(container, allAttributes, args, argumentParserSettings);
+                userrelatedErrorOccured = parsedAttributes.Count == 0;
+
                 ArgumentReflectionUtils.InvokeAllMethodsOfAttribute(typeof(ArgumentAttribute), parsedAttributes);
                 ArgumentReflectionUtils.SetValuesForAttributes(container, parsedAttributes);
+            }
+            else
+                userrelatedErrorOccured = true;
+            
+            if (userrelatedErrorOccured)
+            {
+                if (argumentParserSettings.HelpSettings.UseHelp)
+                {
+                    new HelpCommandBuilder(argumentParserSettings.HelpSettings)
+                        .AddArguments(allAttributes)
+                        .Build();
+                }
             }
 
             return this;

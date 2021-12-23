@@ -42,9 +42,9 @@ namespace Detasutorimu
                                 method.Invoke(obj, new object[] { ctx });
                             }
                         }
+                        // Количество аргументов не совпадает с переданным или задан необрабатываемый аргумент.
                         catch (TargetParameterCountException)
                         {
-                            // Количество аргументов не совпадает с переданным или задан необрабатываемый аргумент.
                             throw new Exception("Method parameters are not expected. It can only be ArgumentContext or nothing.");
                         }
                     }
@@ -147,6 +147,28 @@ namespace Detasutorimu
         }
 
         // TODO delegates container to parse other Types besides string and bool
+        private static object GetParsedContent(Type type, bool contentPresent, string content)
+        {
+            if (type == typeof(bool))
+            {
+                if (contentPresent)
+                {
+                    try
+                    {
+                        return bool.Parse(content);
+                    }
+                    catch (Exception) { }
+                }
+                return true;
+            }
+            else if (type == typeof(string))
+            {
+                return content;
+            }
+
+            throw new Exception("Type is not supported yet.");
+        }
+
         internal static void SetValuesForAttributes(Dictionary<Type, object> container, List<ArgumentModel> argumentOfVariablesToBeSet)
         {
             foreach (var item in container)
@@ -155,17 +177,19 @@ namespace Detasutorimu
                 foreach (var member in members)
                 {
                     ArgumentAttribute attr = (ArgumentAttribute)Attribute.GetCustomAttribute(member, typeof(ArgumentAttribute));
-                    if (attr != null)
+                    if (attr != null && argumentOfVariablesToBeSet.Any(x => x.Argument.Name == attr.Name && x.Argument.Aliases == attr.Aliases && x.Argument.Desciption == attr.Desciption))
                     {
                         switch (member.MemberType)
                         {
                             case MemberTypes.Field:
                                 FieldInfo fieldInfo = item.Key.GetField(member.Name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-                                fieldInfo.SetValue(item.Value, true);
+                                string fieldContent = argumentOfVariablesToBeSet.Find(x => x.Argument.Name == attr.Name && x.Argument.Aliases == attr.Aliases && x.Argument.Desciption == attr.Desciption).Content;
+                                fieldInfo.SetValue(item.Value, GetParsedContent(fieldInfo.FieldType, !string.IsNullOrEmpty(fieldContent), fieldContent));
                                 break;
                             case MemberTypes.Property:
                                 PropertyInfo propertyInfo = item.Key.GetProperty(member.Name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-                                propertyInfo.SetValue(item.Value, true);
+                                string propertyContent = argumentOfVariablesToBeSet.Find(x => x.Argument.Name == attr.Name && x.Argument.Aliases == attr.Aliases && x.Argument.Desciption == attr.Desciption).Content;
+                                propertyInfo.SetValue(item.Value, GetParsedContent(propertyInfo.PropertyType, !string.IsNullOrEmpty(propertyContent), propertyContent));
                                 break;
                         }
                     }

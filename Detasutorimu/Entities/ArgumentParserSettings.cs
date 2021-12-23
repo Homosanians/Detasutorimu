@@ -8,6 +8,6 @@ namespace Detasutorimu.Entities
     {
         public string NamePrefix { get; set; } = "-";
         public string AliasPrefix { get; set; } = "--";
-        public bool UseDefaultHelp { get; set; } = true;
+        public HelpCommandSettings HelpSettings { get; set; } = new HelpCommandSettings();
     }
 }
