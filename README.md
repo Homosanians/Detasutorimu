@@ -8,7 +8,7 @@ class Program
     static void Main()
     {
         Handler hld = new Handler();
-        var argruments = new string[] { "-g", "--pingpong", "hello world!", "-w" };
+        var argruments = new string[] { "-g", "--ping", "hello world!", "-w" };
         new ArgumentParser()
             .WithSettings(new ArgumentParserSettings())
             .Register<Handler>(hld)
@@ -25,7 +25,7 @@ class Program
 
 public class Handler
 {
-    [Argument("p", "Replies with the context", new string[] { "pingpong" })]
+    [Argument("p", "Replies with the context", new string[] { "ping" })]
     public void Method1(ArgumentContext ctx)
     {
         Console.WriteLine($"Pong! {ctx.Content}");
@@ -49,7 +49,7 @@ Usage of non-existent parameters will bring up the help menu.
 Detasutorimu options parser
 
 Name   Aliases      Desciption
-p      (pingpong)   - Replies with the context
+p      (ping)       - Replies with the context
 w      (write)      - Writes something
 g                   - A boolean variable
 s                   - A string variable
