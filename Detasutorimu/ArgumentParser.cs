@@ -17,8 +17,6 @@ namespace Detasutorimu
         private List<ArgumentModel> allAttributes;
         private List<ArgumentModel> parsedAttributes;
 
-        public string HelpText { get; private set; } //
-
         // TODO register assembly(ies)
         // register<>(inst) should handle isntanec and it values i nit
         public ArgumentParser Register<T>(object obj)

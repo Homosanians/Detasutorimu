@@ -146,9 +146,9 @@ namespace Detasutorimu
             return parsedAttributes;
         }
 
+        // TODO delegates container to parse other Types besides string and bool
         internal static void SetValuesForAttributes(Dictionary<Type, object> container, List<ArgumentModel> argumentOfVariablesToBeSet)
         {
-            //throw new NotImplementedException();
             foreach (var item in container)
             {
                 MemberInfo[] members = item.Key.GetMembers();
@@ -160,11 +160,11 @@ namespace Detasutorimu
                         switch (member.MemberType)
                         {
                             case MemberTypes.Field:
-                                FieldInfo fieldInfo = item.Key.GetField(member.Name, BindingFlags.NonPublic | BindingFlags.Instance);
+                                FieldInfo fieldInfo = item.Key.GetField(member.Name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
                                 fieldInfo.SetValue(item.Value, true);
                                 break;
                             case MemberTypes.Property:
-                                PropertyInfo propertyInfo = item.Key.GetProperty(member.Name, BindingFlags.NonPublic | BindingFlags.Instance);
+                                PropertyInfo propertyInfo = item.Key.GetProperty(member.Name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
                                 propertyInfo.SetValue(item.Value, true);
                                 break;
                         }
