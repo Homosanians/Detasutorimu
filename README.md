@@ -1,5 +1,5 @@
 # Detasutorimu
-Program option parser for C#
+Program option parser for C#.
 
 ## Overview
 ```cs
@@ -40,4 +40,17 @@ public class Handler
     [Argument("g", "A variable")]
     public bool gBool;
 }
+```
+
+### Help
+Usage of non-existent parameters will bring up the help menu.
+
+```
+Detasutorimu options parser
+
+Name   Aliases      Desciption
+p      (pingpong)   - Replies with the context
+w      (write)      - Writes something
+g                   - A boolean variable
+s                   - A string variable
 ```
